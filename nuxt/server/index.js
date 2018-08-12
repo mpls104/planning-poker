@@ -34,6 +34,8 @@ async function start() {
 }
 
 let messageQueue = []
+let attendee = 0
+let estimatedPoint = []
 
 function soketStart(server) {
   // Websocketサーバーインスタンスを生成する 
@@ -50,6 +52,10 @@ function soketStart(server) {
         socket.emit('new-message', message)
       })
     }
+    //サーバー側で保持している参加者の数をクライアント側に送信する。
+    if (attendee > 0) {
+        socket.emit('show-attendee', attendee)
+      }
 
     // クライアントから送信があった場合のイベントを作成する
     socket.on('send-message', message => {
@@ -64,6 +70,11 @@ function soketStart(server) {
       if (messageQueue.length > 10) {
         messageQueue = messageQueue.slice(-10)
       }
+    })
+    socket.on('commit-point', result => {
+      console.log(result)
+      estimatedPoint.push(result)
+      attendee ++
     })
   })
 
