@@ -45,7 +45,7 @@ function soketStart(server) {
     console.log('id: ' + socket.id + 'is connected')
 
     //サーバー側で保持しているメッセージをクラアント側に送信する。
-    if(messageQueue.length > 0) {
+    if (messageQueue.length > 0) {
       messageQueue.forEach(message => {
         socket.emit('new-message', message)
       })
