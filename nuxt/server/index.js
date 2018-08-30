@@ -72,9 +72,18 @@ function soketStart(server) {
       }
     })
     socket.on('commit-point', result => {
-      console.log(result)
       estimatedPoint.push(result)
+      console.log(estimatedPoint)
       attendee ++
+    })
+    socket.on('remove-point', result => {
+      estimatedPoint = estimatedPoint.filter(n => n != result)
+      attendee --
+    })
+    socket.on('show-result', () => {
+      //送信を行なったクライアント以外のクライアントに対してメッセージを送信する。
+      console.log(estimatedPoint)
+
     })
   })
 

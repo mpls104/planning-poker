@@ -8,17 +8,17 @@
             </p>
            <div class="tile flex">
            <div class="tile" v-for="(point, index) in dflpoints" :key="index">
-            <button class="button rounded-img-container  is-info is-large" @click="sendPoint">
+            <button class="button rounded-img-container  is-info is-large" @click="sendPoint(index)" :disabled="submitted">
             {{point}}
             </button>
            </div> 
            </div>
             <div class="media inline">
            <div class="flex">
-            <button class="button is-medium is-primary">
+            <button class="button is-medium is-primary" @click="showResult()" :disabled="!submitted">
             Show Result
             </button>
-            <button class="button is-medium is-primary">
+            <button class="button is-medium is-primary" @click="clearPoint()" :disabled="!submitted">
             Clear Select
             </button>            
             </div>
@@ -37,7 +37,9 @@ export default {
       dflpoints: ["1pt", "2pt", "3pt", "5pt", "8pt", "13pt"],
       attendee: 0,
       socket: "",
-      isLoading: true
+      isLoading: true,
+      submitted: false,
+      results : []
     };
   },
   computed: {
@@ -60,7 +62,11 @@ export default {
     }, 1000);
   },
   methods: {
-    sendPoint() {
+    sendPoint(index) {
+        console.log(this)
+    this.selectedPoint = this.dflpoints[index]
+    // disable another button
+    this.submitted = true
       // Create Point Object
       let result = {
         user: this.socket.id,
@@ -71,17 +77,28 @@ export default {
 
       // Send message to server
       this.socket.emit("commit-point", result);
-      // Add user's own attendee & point
-    }
+    },
+    clearPoint() {
+        this.attendee--;
+        // enable another button
+        this.submitted = false
+        this.selectedPoint =  ""
+        this.socket.emit("remove-point", this.selectedPoint);
+    },
+    showResult() {
+    //   console.log()
+    this.socket.emit("show-result");
+    },
   }
 };
 </script>
 <style>
 .rounded-img-container {
-  width: 180px;
-  height: 180px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   overflow: hidden;
+  margin: 5px;
 }
 .rounded-img {
   width: inherit;
